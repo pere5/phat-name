@@ -106,7 +106,7 @@ class Game extends React.Component {
       const desc = this.moveToReadable(history[index].move);
       return (
         <li key={index}>
-          <a href="#" onClick={() => this.jumpTo(index)}>{desc}</a>
+          <a href="#" onClick={() => this.jumpTo(index)}>{index === this.state.stepNumber ? <b>{desc}</b> : desc}</a>
         </li>
       );
     });
