@@ -15,6 +15,7 @@ class Board extends React.Component {
   renderSquare(i) {
     return (
       <Square
+        key={'square ' + i}
         value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}
       />
@@ -22,23 +23,17 @@ class Board extends React.Component {
   }
 
   render() {
+    let index = -1;
     return (
       <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
+        {[...new Array(3)].map((x, i) =>
+          <div key={'row ' + i} className="board-row">
+            {[...new Array(3)].map((y, j) => {
+              index++;
+              return this.renderSquare(index);
+            })}
+          </div>
+        )}
       </div>
     );
   }
@@ -50,7 +45,7 @@ class Game extends React.Component {
     super();
     this.state = {
       history: [{
-        squares: Array(9).fill(null),
+        squares: new Array(9).fill(null),
         move: null,
       }],
       xIsNext: true,
