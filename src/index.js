@@ -4,7 +4,7 @@ import './index.css';
 
 function Square(props) {
   return (
-    <button className="square" onClick={props.onClick}>
+    <button style={props.winner ? {backgroundColor: 'lightgreen'}: {}} className="square" onClick={props.onClick}>
       {props.value}
     </button>
   );
@@ -16,8 +16,9 @@ class Board extends React.Component {
     return (
       <Square
         key={'square ' + i}
-        value={this.props.squares[i]}
+        value={this.props.squares[i].value}
         onClick={() => this.props.onClick(i)}
+        winner={this.props.squares[i].winner}
       />
     );
   }
@@ -43,9 +44,14 @@ class Game extends React.Component {
 
   constructor() {
     super();
+    let squares = [];
+    for (let i = 0; i < 9; i++) squares.push({
+      value: null,
+      winner: false
+    });
     this.state = {
       history: [{
-        squares: new Array(9).fill(null),
+        squares: squares,
         move: null,
       }],
       xIsNext: true,
@@ -58,10 +64,11 @@ class Game extends React.Component {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[this.state.stepNumber];
     const squares = current.squares.slice();
-    if (calculateWinner(squares) || squares[i]) {
+    if (calculateWinner(squares) || squares[i].value) {
       return;
     }
-    squares[i] = this.state.xIsNext ? 'X' : 'O';
+
+    squares[i].value = this.state.xIsNext ? 'X' : 'O';
     this.setState({
       history: history.concat([{
         squares: squares,
@@ -94,7 +101,6 @@ class Game extends React.Component {
   }
 
   reverseOrder() {
-    console.log('lol');
     this.setState({
       ascending: !this.state.ascending
     });
@@ -160,8 +166,11 @@ function calculateWinner(squares) {
   ];
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+    if (squares[a].value && squares[a].value === squares[b].value && squares[a].value === squares[c].value) {
+      squares[a].winner = true;
+      squares[b].winner = true;
+      squares[c].winner = true;
+      return squares[a].value;
     }
   }
   return null;
