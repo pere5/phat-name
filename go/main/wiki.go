@@ -10,7 +10,7 @@ import (
 
 var tmplPath = "go/main/tmpl/"
 var dataPath = "go/main/data/"
-var templates = template.Must(template.ParseFiles(tmplPath+ "edit.html", tmplPath+ "view.html"))
+var templates = template.Must(template.ParseFiles(tmplPath + "edit.html", tmplPath + "view.html", tmplPath + "build/index.html"))
 var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
 var replaceAll = regexp.MustCompile(".txt")
 
@@ -21,13 +21,20 @@ type Page struct {
 }
 
 func main() {
-	http.HandleFunc("/", defaultHandler)
+	//http.HandleFunc("/", defaultHandler)
 	http.HandleFunc("/view/", makeHandler(viewHandler))
 	http.HandleFunc("/edit/", makeHandler(editHandler))
 	http.HandleFunc("/save/", makeHandler(saveHandler))
 	http.HandleFunc("/api/json", foo)
+	http.HandleFunc("/lol/", lol)
 
+	fs := http.FileServer(http.Dir("go/main/tmpl/build/static/"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
 	http.ListenAndServe(":8080", nil)
+}
+
+func lol(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "index", nil)
 }
 
 type Profile struct {
