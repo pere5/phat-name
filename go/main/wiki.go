@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"html/template"
+	"encoding/json"
 )
 
 var tmplPath = "go/main/tmpl/"
@@ -24,8 +25,27 @@ func main() {
 	http.HandleFunc("/view/", makeHandler(viewHandler))
 	http.HandleFunc("/edit/", makeHandler(editHandler))
 	http.HandleFunc("/save/", makeHandler(saveHandler))
+	http.HandleFunc("/api/json", foo)
 
 	http.ListenAndServe(":8080", nil)
+}
+
+type Profile struct {
+	Name    string
+	Hobbies []string
+}
+
+func foo(w http.ResponseWriter, r *http.Request) {
+	profile := Profile{"Alex", []string{"snowboarding", "programming"}}
+
+	js, err := json.Marshal(profile)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
 }
 
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {

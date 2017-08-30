@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import ReactDOM from 'react-dom';
 import './index.css';
 
@@ -44,6 +45,16 @@ class Game extends React.Component {
 
   constructor() {
     super();
+
+    axios.get('/api/json')
+      .then(function (response) {
+        console.log(response.data.Hobbies[0] === "snowboarding");
+        console.log(response.data.Hobbies[0]);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+
     let squares = [];
     for (let i = 0; i < 9; i++) squares.push({
       value: null,
